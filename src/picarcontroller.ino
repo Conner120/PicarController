@@ -47,6 +47,7 @@ Button monitorButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/
 Button settingsButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button otherButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button erase = Button();
+Button emergancyButton = Button();
 int prevScreen = 0;
 Sd2Card card;
 const int chipSelect = 4;
@@ -445,6 +446,12 @@ void drawSettings(int p) {
       otherButton.setEventHandler(&drawMoreButton);
       otherButton.init();
       otherButton.visible = true;
+      emergancyButton.setSize(140, 75);
+      emergancyButton.setColors(GRAY1, BLACK, WHITE);
+      emergancyButton.setText("Emergancy");
+      emergancyButton.setEventHandler(&drawMoreButton);
+      emergancyButton.init();
+      emergancyButtonvisible = true;
       backButton.setSize(140, 75);
       backButton.setColors(GRAY1, BLACK, WHITE);
       backButton.visible = true;
@@ -456,7 +463,7 @@ void drawSettings(int p) {
       canvas.add(&settingsButton, 165, 65);
       canvas.add(&otherButton, 165, 150);
       canvas.add(&backButton, 15, 65);
-
+      canvas.add(&emergancyButton, 110, 90);
       break;
     case 3:
 
@@ -515,6 +522,7 @@ void SDErase(Button *btn) {
 int getSDInfo(int i) {
 
 }
+
 void remoteCommand(){
   char mode=Serial1.read();
   if (mode=='c'){
@@ -526,9 +534,10 @@ void remoteCommand(){
   }
 }
 
+
 void localCommand(){
 
 }
 void updateGuides(int side,int dist){
-  
+
 }
