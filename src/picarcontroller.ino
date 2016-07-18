@@ -234,9 +234,11 @@ void loop() { // run over and over
    // }
     }
   if (Serial1.available()) {
-    Serial.write(Serial1.read());
+    remoteCommand();
+    //Serial.write(Serial1.read());
   }
   if (Serial.available()) {
+    localCommand();
     Serial1.write(Serial.read());
     //      if (SDCard) {
     //        File dataFile = SD.open("datalog.txt", FILE_WRITE);
@@ -512,4 +514,21 @@ void SDErase(Button *btn) {
 }
 int getSDInfo(int i) {
 
+}
+void remoteCommand(){
+  char mode=Serial1.read();
+  if (mode=='c'){
+    int side = Serial1.parseInt();
+    int dist = Serial1.parseInt();
+    updateGuides(side,dist);
+  }else if(mode=='w'){
+
+  }
+}
+
+void localCommand(){
+
+}
+void updateGuides(int side,int dist){
+  
 }
