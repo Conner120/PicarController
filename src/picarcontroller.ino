@@ -34,7 +34,7 @@
 #include <Gauge.h>
 #include <Numkey.h>
 #include <Popup.h>
-
+bool light=false;
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
 Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228Popup popup = Popup();
 Popup popup = Popup();
@@ -45,6 +45,7 @@ Button backButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Gauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
 Button monitorButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button settingsButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
+Button lightstog = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button otherButton = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button erase = Button();
 Button emergancyButton = Button();
@@ -227,11 +228,11 @@ void loop() { // run over and over
   //if (!ESTOP) {
   int analog15 = analogRead(A15);
   int analog13 = analogRead(A12);
-    if ((millis()%10 )< 1) {
+    if ((millis()%10 )==0) {
 // if (analog15 == rVal && analog13 == lVal) {
 //
 //    } else {
-      sendAnalogStick(A15, A12);
+      //sendAnalogStick(A15, A12);
    // }
     }
   if (Serial1.available()) {
@@ -266,14 +267,27 @@ void drawHome() {
   dialRight.init();
   dialRight.setHiLimit(515, GREEN);
   dialRight.setLowLimit(513, RED);
-
+  emergancyButton.setSize(130, 60);
+  emergancyButton.setColors(RED, BLACK, WHITE);
+  emergancyButton.setText("Emergancy");
+  emergancyButton.setEventHandler(&emergancyLights);
+  emergancyButton.setDebounce(2500);
+  emergancyButton.init();
+  emergancyButton.visible = true;
+  lightstog.setSize(110, 60);
+  lightstog.setColors(WHITE, BLACK, YELLOW);
+  lightstog.setText("Lamp");
+  lightstog.setEventHandler(&lamplights);
+  lightstog.setDebounce(2500);
+  lightstog.init();
+  lightstog.visible = true;
   dialLeft.setSize(50);
   dialLeft.setColors(GRAY2, YELLOW, GRAY1);
   dialLeft.setLimits(0, 514, 999);
   dialLeft.init();
   dialLeft.setHiLimit(515, GREEN);
   dialLeft.setLowLimit(513, RED);
-  menuButton.setSize(80, 40);
+  menuButton.setSize(80, 60);
   menuButton.setColors(GRAY1, BLACK, WHITE);
   menuButton.setText("Menu");
   menuButton.setEventHandler(&drawMenuButton);
@@ -283,6 +297,27 @@ void drawHome() {
   canvas.add(&menuButton, 0, 0);
   canvas.add(&dialLeft, 65, 180);
   canvas.add(&dialRight, 260, 180);
+canvas.add(&emergancyButton, 190, 0);
+canvas.add(&lightstog, 80, 0);
+
+}
+void lamplights(Button *btn){
+if (light){
+Serial1.println("ls0,0,0,0,0,0,");
+light=false;
+}else{
+  Serial1.println("ls1,1,1,1,1,1,");
+  light=true;
+}
+}
+void emergancyLights(Button *btn) {
+Serial.println("emergancy Lights");
+  Serial1.println("lr");
+  Serial1.flush();
+  emergancyButton.setColors(RED, YELLOW, GRAY1);
+  emergancyButton.init();
+
+  delay(300);
 
 }
 void drawMenuButton(Button *btn) {
@@ -338,10 +373,12 @@ void drawMenu(int p) {
   backButton.setEventHandler(&drawHomeBtn);
   backButton.init();
   backButton.setDebounce(1000);
+
   canvas.add(&monitorButton, 15, 150);
   canvas.add(&settingsButton, 165, 65);
   canvas.add(&otherButton, 165, 150);
   canvas.add(&backButton, 15, 65);
+
 
   //}
 
@@ -446,12 +483,6 @@ void drawSettings(int p) {
       otherButton.setEventHandler(&drawMoreButton);
       otherButton.init();
       otherButton.visible = true;
-      emergancyButton.setSize(140, 75);
-      emergancyButton.setColors(GRAY1, BLACK, WHITE);
-      emergancyButton.setText("Emergancy");
-      emergancyButton.setEventHandler(&drawMoreButton);
-      emergancyButton.init();
-      emergancyButtonvisible = true;
       backButton.setSize(140, 75);
       backButton.setColors(GRAY1, BLACK, WHITE);
       backButton.visible = true;
@@ -463,7 +494,6 @@ void drawSettings(int p) {
       canvas.add(&settingsButton, 165, 65);
       canvas.add(&otherButton, 165, 150);
       canvas.add(&backButton, 15, 65);
-      canvas.add(&emergancyButton, 110, 90);
       break;
     case 3:
 
@@ -533,8 +563,6 @@ void remoteCommand(){
 
   }
 }
-
-
 void localCommand(){
 
 }
